@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="7a3b6c3e01f84eaeb562af2c0d26837d" Name="Diagram1">
+        <EntityTypeShape EntityType="MediaOpinionsDBModel.AspNetUser" Width="1.5" PointX="8.125" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="MediaOpinionsDBModel.Category" Width="1.5" PointX="0.75" PointY="1.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="MediaOpinionsDBModel.MediaItem" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="MediaOpinionsDBModel.Opinion" Width="1.5" PointX="5.25" PointY="1" IsExpanded="true" />
+        <AssociationConnector Association="MediaOpinionsDBModel.FK__Opinions__Usuari__66603565" ManuallyRouted="false" />
+        <AssociationConnector Association="MediaOpinionsDBModel.FK__MediaItem__Categ__398D8EEE" ManuallyRouted="false" />
+        <AssociationConnector Association="MediaOpinionsDBModel.FK__Opinions__MediaI__656C112C" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

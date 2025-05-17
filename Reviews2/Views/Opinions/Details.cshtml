@@ -1,0 +1,58 @@
+﻿@model Reviews2.Models.Opinion
+
+@{
+    ViewBag.Title = "Detalles de la Opinión";
+}
+
+<div class="opinion-details">
+    <h2>Opinión sobre: @Model.MediaItem.Titulo</h2>
+    <hr />
+
+    <dl class="dl-horizontal">
+        <dt>Usuario:</dt>
+        <dd>@(Model.User?.UserName ?? "Usuario eliminado")</dd>
+
+        <dt>Comentario:</dt>
+        <dd>@Model.Comentario</dd>
+
+        <dt>Calificación:</dt>
+        <dd>
+            @for (int i = 0; i < (Model.Calificacion ?? 0); i++)
+            {
+                <span>★</span>
+            }
+        </dd>
+
+        <dt>Fecha:</dt>
+        <dd>@Model.Fecha?.ToString("dd/MM/yyyy HH:mm")</dd>
+    </dl>
+</div>
+
+<div class="action-links mt-4">
+    @if (User.IsInRole("Admin") || User.Identity.Name == Model.User?.UserName)
+    {
+        @Html.ActionLink("Editar", "Edit", new { id = Model.Id }, new { @class = "btn btn-warning" })
+        @: |
+    }
+    @Html.ActionLink("Volver al listado", "Index", null, new { @class = "btn btn-default" })
+</div>
+
+<style>
+    .opinion-details {
+        background-color: #f9f9f9;
+        padding: 20px;
+        border-radius: 5px;
+    }
+
+    .dl-horizontal dt {
+        width: 150px;
+        text-align: left;
+        font-weight: normal;
+        color: #666;
+    }
+
+    .dl-horizontal dd {
+        margin-left: 170px;
+        margin-bottom: 10px;
+    }
+</style>
