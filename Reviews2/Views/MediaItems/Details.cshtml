@@ -1,19 +1,25 @@
-﻿@model Reviews2.Models.MediaItem
+﻿@model Reviews2.Models.MediaItemDetailsViewModel
+@using Microsoft.AspNet.Identity
+@using Reviews2.Models
 
 @{
     ViewBag.Title = "Detalles del Medio";
 }
 
 <div class="media-details-container">
-    <h2>@Model.Titulo</h2>
+    <h2>@Model.MediaItem.Titulo</h2>
     <hr />
 
     <div class="row">
-        <!-- Columna de imagen -->
+        <!-- Image column -->
         <div class="col-md-4">
-            @if (!string.IsNullOrEmpty(Model.ImagenUrl))
+            @if (!string.IsNullOrEmpty(Model.MediaItem.ImagenUrl))
             {
-                <img src="@Model.ImagenUrl" alt="@Model.Titulo" class="img-responsive thumbnail" style="max-height: 300px;" />
+                <img src="@Model.MediaItem.ImagenUrl"
+                     alt="@Model.MediaItem.Titulo"
+                     class="img-responsive thumbnail"
+                     style="max-height: 300px;"
+                     onerror="this.onerror=null;this.src='/Content/avatars/default.png';" />
             }
             else
             {
@@ -23,40 +29,70 @@
             }
         </div>
 
-        <!-- Columna de detalles -->
+        <!-- Details column -->
         <div class="col-md-8">
             <dl class="dl-horizontal">
-                <dt>@Html.DisplayNameFor(model => model.Descripcion)</dt>
-                <dd>@Html.DisplayFor(model => model.Descripcion)</dd>
+                <dt>Descripción</dt>
+                <dd>@Model.MediaItem.Descripcion</dd>
 
-                <dt>@Html.DisplayNameFor(model => model.Plataforma)</dt>
-                <dd>@(string.IsNullOrEmpty(Model.Plataforma) ? "No especificada" : Model.Plataforma)</dd>
+                <dt>Plataforma</dt>
+                <dd>@(string.IsNullOrEmpty(Model.MediaItem.Plataforma) ? "No especificada" : Model.MediaItem.Plataforma)</dd>
 
-                <dt>@Html.DisplayNameFor(model => model.FechaPublicacion)</dt>
-                <dd>@(Model.FechaPublicacion?.ToString("d") ?? "No especificada")</dd>
+                <dt>Fecha de publicación</dt>
+                <dd>@(Model.MediaItem.FechaPublicacion?.ToString("d") ?? "No especificada")</dd>
 
                 <dt>Categoría</dt>
-                <dd>@(Model.Category?.Nombre ?? "Sin categoría")</dd>
+                <dd>@(Model.MediaItem.Category?.Nombre ?? "Sin categoría")</dd>
             </dl>
         </div>
     </div>
 
     <h3>Opiniones de usuarios</h3>
     <div class="opiniones-container">
-        @if (Model.Opinions != null && Model.Opinions.Any())
+        @if (Model.MediaItem.Opinions != null && Model.MediaItem.Opinions.Any())
         {
-            foreach (var opinion in Model.Opinions.OrderByDescending(o => o.Fecha))
+            foreach (var opinion in Model.MediaItem.Opinions.OrderByDescending(o => o.Fecha))
             {
+                
+                var usuarioInfo = Model.UsuariosInfo?.ContainsKey(opinion.UsuarioId) == true
+                    ? Model.UsuariosInfo[opinion.UsuarioId]
+                    : new UserInfoViewModel
+                    {
+                        UserName = opinion.AspNetUser?.UserName ?? "Usuario",
+                        NombreCompleto = !string.IsNullOrWhiteSpace(opinion.AspNetUser?.NombreCompleto)
+                            ? opinion.AspNetUser.NombreCompleto
+                            : opinion.AspNetUser?.UserName ?? "Usuario anónimo",
+                        AvatarUrl = !string.IsNullOrWhiteSpace(opinion.AspNetUser?.AvatarUrl)
+                            ? opinion.AspNetUser.AvatarUrl
+                            : "/Content/avatars/default.png"
+                    };
+
                 <div class="opinion-item panel panel-default">
                     <div class="panel-heading">
-                        <strong>@(opinion.AspNetUser?.UserName ?? "Usuario anónimo")</strong>
-                        <span class="pull-right">
-                            @for (int i = 0; i < (opinion.Calificacion ?? 0); i++)
-                            {
-                                <span>★</span>
-                            }
-                            
-                        </span>
+                        <div class="media">
+                            <div class="media-left">
+                                <img src="@(usuarioInfo.AvatarUrl.StartsWith("http") ? usuarioInfo.AvatarUrl : Url.Content(usuarioInfo.AvatarUrl))"
+                                     alt="@usuarioInfo.NombreCompleto"
+                                     class="img-circle user-avatar"
+                                     width="40" height="40"
+                                     loading="lazy"
+                                     onerror="this.onerror=null;this.src='@Url.Content("~/Content/avatars/default.png")'" />
+                            </div>
+                            <div class="media-body">
+                                <strong>@usuarioInfo.NombreCompleto</strong>
+
+
+                                <span class="pull-right">
+                                    @for (int i = 0; i < (opinion.Calificacion ?? 0); i++)
+                                    {
+                                        <span class="text-warning">★</span>
+                                    }
+                                </span>
+                                <div class="text-muted small">
+                                    @(opinion.Fecha?.ToString("g") ?? "Fecha no disponible")
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="panel-body">
                         @opinion.Comentario
@@ -70,13 +106,12 @@
         }
     </div>
 
-    <!-- Sección de acciones -->
-    <!-- Sección de acciones -->
+    <!-- Action buttons -->
     <div class="action-buttons">
         @if (User.IsInRole("Admin"))
         {
-            @Html.ActionLink("Editar", "Edit", new { id = Model.Id }, new { @class = "btn btn-warning" })
-            @Html.ActionLink("Eliminar", "Delete", new { id = Model.Id }, new { @class = "btn btn-danger" })
+            @Html.ActionLink("Editar", "Edit", new { id = Model.MediaItem.Id }, new { @class = "btn btn-warning" })
+            @Html.ActionLink("Eliminar", "Delete", new { id = Model.MediaItem.Id }, new { @class = "btn btn-danger" })
         }
         @Html.ActionLink("Volver al catálogo", "Index", "Home", null, new { @class = "btn btn-default" })
     </div>
@@ -88,7 +123,7 @@
             @using (Html.BeginForm("Create", "Opinions", FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
-                <input type="hidden" name="mediaItemId" value="@Model.Id" />
+                <input type="hidden" name="mediaItemId" value="@Model.MediaItem.Id" />
 
                 <div class="form-group">
                     <label>Comentario:</label>
@@ -117,6 +152,7 @@
         </div>
     }
 </div>
+
 
 <style>
     .media-details-container {
@@ -149,7 +185,6 @@
         margin-bottom: 10px;
     }
 
-  
     .opiniones-container {
         margin-top: 30px;
     }
@@ -162,4 +197,22 @@
         padding: 8px 15px;
     }
 
+    .user-avatar {
+        object-fit: cover;
+        border: 2px solid #eee;
+        margin-right: 10px;
+        transition: transform 0.3s ease;
+    }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+        }
+
+    .opinion-item {
+        transition: box-shadow 0.3s ease;
+    }
+
+        .opinion-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
 </style>

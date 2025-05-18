@@ -190,6 +190,7 @@
     <Compile Include="Models\MediaItem.cs">
       <DependentUpon>MediaOptionsModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\MediaItemDetailsViewModel.cs" />
     <Compile Include="Models\MediaOptionsModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -212,6 +213,7 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\avatars\default.png" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-grid.rtl.css" />

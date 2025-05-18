@@ -26,16 +26,20 @@ namespace Reviews2.Controllers
         public ActionResult Details(int? id)
         {
             if (id == null)
-            {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Opinion opinion = db.Opinions.Find(id);
+
+            // 🔧 ESTA ES LA LÍNEA CORRECTA
+            var opinion = db.Opinions
+                .Include(o => o.AspNetUser)
+                .Include(o => o.MediaItem)
+                .FirstOrDefault(o => o.Id == id);
+
             if (opinion == null)
-            {
                 return HttpNotFound();
-            }
+
             return View(opinion);
         }
+
 
         // GET: Opinions/Create
         public ActionResult Create()

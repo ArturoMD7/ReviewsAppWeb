@@ -9,8 +9,12 @@
     <hr />
 
     <dl class="dl-horizontal">
-        <dt>Usuario:</dt>
-        <dd>@(Model.User?.UserName ?? "Usuario eliminado")</dd>
+
+        <dd>
+            @(string.IsNullOrWhiteSpace(Model.AspNetUser?.NombreCompleto)
+        ? (Model.AspNetUser?.UserName ?? "Usuario eliminado")
+        : Model.AspNetUser.NombreCompleto)
+        </dd>
 
         <dt>Comentario:</dt>
         <dd>@Model.Comentario</dd>

@@ -21,6 +21,8 @@
           <Property Name="LockoutEnabled" Type="bit" Nullable="false" />
           <Property Name="AccessFailedCount" Type="int" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="NombreCompleto" Type="nvarchar(max)" />
+          <Property Name="AvatarUrl" Type="nvarchar(max)" />
         </EntityType>
         <EntityType Name="Categories">
           <Key>
@@ -127,6 +129,8 @@
           <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
           <Property Name="UserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
           <NavigationProperty Name="Opinions" Relationship="Self.FK__Opinions__Usuari__66603565" FromRole="AspNetUsers" ToRole="Opinions" />
+          <Property Name="NombreCompleto" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="AvatarUrl" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Category">
           <Key>
@@ -226,6 +230,8 @@
           <EntitySetMapping Name="AspNetUsers">
             <EntityTypeMapping TypeName="MediaOpinionsDBModel.AspNetUser">
               <MappingFragment StoreEntitySet="AspNetUsers">
+                <ScalarProperty Name="AvatarUrl" ColumnName="AvatarUrl" />
+                <ScalarProperty Name="NombreCompleto" ColumnName="NombreCompleto" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />

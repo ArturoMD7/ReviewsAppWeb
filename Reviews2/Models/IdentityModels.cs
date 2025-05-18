@@ -11,8 +11,8 @@ namespace Reviews2.Models
     public class ApplicationUser : IdentityUser
     {
 
-        //public string NombreCompleto { get; set; }
-        //public string AvatarUrl { get; set; }
+        public string NombreCompleto { get; set; }
+        public string AvatarUrl { get; set; }
 
         // Relación inversa con opiniones (opcional)
         public virtual ICollection<Opinion> Opinions { get; set; }
@@ -21,6 +21,7 @@ namespace Reviews2.Models
             // Tenga en cuenta que authenticationType debe coincidir con el valor definido en CookieAuthenticationOptions.AuthenticationType
             var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
             // Agregar reclamaciones de usuario personalizadas aquí
+            userIdentity.AddClaim(new Claim("NombreCompleto", this.NombreCompleto));
             return userIdentity;
         }
     }
