@@ -153,7 +153,7 @@ namespace Reviews2.Controllers
             {
                 var user = new ApplicationUser
                 {
-                    UserName = model.Email,
+                    UserName = model.NombreCompleto,
                     Email = model.Email,
                     NombreCompleto = model.NombreCompleto,
                     AvatarUrl = model.AvatarUrl ?? "/Content/avatars/default.png" // Valor por defecto

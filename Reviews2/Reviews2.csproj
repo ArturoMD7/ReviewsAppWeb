@@ -214,6 +214,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\avatars\default.png" />
+    <Content Include="Content\avatars\logo.jpg" />
+    <Content Include="Content\avatars\logo2.png" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-grid.rtl.css" />
