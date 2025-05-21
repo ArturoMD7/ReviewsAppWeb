@@ -2,57 +2,219 @@
 
 @{
     ViewBag.Title = "Catálogo de Medios";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Asegurar layout consistente
 }
 
+<main class="container my-5">
+    <!-- Sección de Filtros Mejorada -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4">Explora nuestro catálogo</h2>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <button class="btn btn-primary filter-btn active" data-category="todas">
+                <i class="fas fa-th me-2"></i>Todas
+            </button>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+            @{
+                var categorias = Model
+                    .Select(i => i.Category?.Nombre ?? "Sin categoría")
+                    .Distinct()
+                    .OrderBy(c => c)
+                    .ToList();
+            }
 
-<main class="container my-4">
+            @foreach (var cat in categorias)
+            {
+                var catId = cat.ToLower().Replace(" ", "-");
+                <button class="btn btn-outline-primary filter-btn" data-category="@catId">
+                    @if (cat == "Película")
+                    {<i class="fas fa-film me-2"></i> }
+                    else if (cat == "Serie")
+                    { <i class="fas fa-tv me-2"></i> }
+                    else if (cat == "Documental")
+                    { <i class="fas fa-book me-2"></i>}
+                    @cat
+                </button>
+            }
+        </div>
 
+        <!-- Barra de búsqueda añadida -->
+        <div class="mt-4 mx-auto" style="max-width: 350px;">
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <input type="text" id="searchInput" class="form-control" placeholder="Buscar por título...">
+                <button class="btn btn-secondary" id="clearSearch">Limpiar</button>
+            </div>
+        </div>
+    </section>
 
-    <section class="row">
+    <!-- Sección de Resultados -->
+    <section class="row g-4" id="contenido">
         @foreach (var item in Model)
         {
-            <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
-                <div class="card h-100">
+            var categoriaId = (item.Category?.Nombre ?? "Sin categoría").ToLower().Replace(" ", "-");
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 item" data-category="@categoriaId" data-title="@item.Titulo.ToLower()">
+                <div class="card h-100 shadow-sm">
                     @if (!string.IsNullOrEmpty(item.ImagenUrl))
                     {
-                        <img src="@item.ImagenUrl" class="card-img-top" alt="@item.Titulo" style="max-height: 200px; object-fit: cover;" />
+                        <img src="@item.ImagenUrl" class="card-img-top" alt="@item.Titulo"
+                             style="height: 200px; object-fit: cover; object-position: center;">
                     }
+                    else
+                    {
+                        <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
+                             style="height: 200px;">
+                            <i class="fas fa-image fa-3x text-muted"></i>
+                        </div>
+                    }
+
                     <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">@item.Titulo</h5>
-                        <p class="card-text mb-1"><strong>Categoría:</strong> @(item.Category?.Nombre ?? "Sin categoría")</p>
-                        <p class="card-text mb-1">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title mb-0">@item.Titulo</h5>
+                            <span class="badge bg-info text-dark">@item.Plataforma</span>
+                        </div>
+
+                        <p class="card-text text-muted small mb-2">
+                            <i class="fas fa-tag me-1"></i> @(item.Category?.Nombre ?? "Sin categoría")
+                        </p>
+
+                        <p class="card-text flex-grow-1">
                             @{
-                                var palabras = item.Descripcion?.Split(' ');
-                                var preview = palabras != null && palabras.Length > 15
-                                    ? string.Join(" ", palabras.Take(15)) + "..."
+                                var preview = item.Descripcion?.Length > 100
+                                    ? item.Descripcion.Substring(0, 100) + "..."
                                     : item.Descripcion;
                             }
                             @preview
                         </p>
-                        <p class="card-text mb-1"><strong>Plataforma:</strong> @item.Plataforma</p>
-                        <p class="card-text mb-3"><small class="text-muted">Publicado: @(item.FechaPublicacion?.ToString("d") ?? "No especificada")</small></p>
-                        <a href="@Url.Action("Details", "MediaItems", new { id = item.Id })" class="btn btn-info mt-auto">Ver detalles</a>
+
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar-alt me-1"></i>
+                                @(item.FechaPublicacion?.ToString("d") ?? "N/A")
+                            </small>
+                            <a href="@Url.Action("Details", "MediaItems", new { id = item.Id })"
+                               class="btn btn-sm btn-outline-primary">
+                                Ver más <i class="fas fa-chevron-right ms-1"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-
         }
-
-
     </section>
+
+    <!-- Mensaje cuando no hay resultados -->
+    <div id="noResults" class="text-center py-5 d-none">
+        <i class="fas fa-search fa-3x text-muted mb-3"></i>
+        <h3>No se encontraron resultados</h3>
+        <p class="text-muted">Intenta con otros filtros o términos de búsqueda</p>
+        <button class="btn btn-primary" id="resetFilters">Mostrar todos</button>
+    </div>
 </main>
 
 @section estilos {
     <style>
+        
         .navbar {
-            border-bottom: 3px solid #Ff0000;
+            border-bottom: 3px solid #dc3545;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .navbar-nav .btn {
-            font-weight: bold;
-            padding: 6px 12px;
+        
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            }
+
+        /* Botones de filtro activos */
+        .filter-btn.active {
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Placeholder para imágenes faltantes */
+        .img-placeholder {
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+        }
+
+        /* Responsividad mejorada */
+        @@media (max-width: 576px) {
+            .card-img-top {
+                height: 150px !important;
+            }
         }
     </style>
+}
+
+@section scripts {
+   
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const mediaItems = document.querySelectorAll('.item');
+            const searchInput = document.getElementById('searchInput');
+            const clearSearch = document.getElementById('clearSearch');
+            const resetFilters = document.getElementById('resetFilters');
+            const noResults = document.getElementById('noResults');
+
+            
+            function filterItems() {
+                const activeCategory = document.querySelector('.filter-btn.active').dataset.category;
+                const searchTerm = searchInput.value.toLowerCase();
+                let visibleItems = 0;
+
+                mediaItems.forEach(item => {
+                    const matchesCategory = activeCategory === 'todas' ||
+                        item.dataset.category === activeCategory;
+                    const matchesSearch = item.dataset.title.includes(searchTerm);
+
+                    if (matchesCategory && matchesSearch) {
+                        item.style.display = 'block';
+                        visibleItems++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                
+                noResults.classList.toggle('d-none', visibleItems > 0);
+            }
+
+           
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    filterItems();
+                });
+            });
+
+            
+            searchInput.addEventListener('input', filterItems);
+
+        
+            clearSearch.addEventListener('click', () => {
+                searchInput.value = '';
+                filterItems();
+            });
+
+         
+            resetFilters.addEventListener('click', () => {
+                searchInput.value = '';
+                document.querySelector('.filter-btn[data-category="todas"]').click();
+            });
+
+            // Inicializar
+            filterItems();
+        });
+    </script>
 }

@@ -4,60 +4,66 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<h2>Contenido</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-success" })
 </p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Titulo)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Descripcion)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.ImagenUrl)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Plataforma)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.FechaPublicacion)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Category.Nombre)
-        </th>
-        <th></th>
-    </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Titulo)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Descripcion)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ImagenUrl)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Plataforma)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.FechaPublicacion)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Category.Nombre)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-        </td>
-    </tr>
-}
 
-</table>
+    <table class="table">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Titulo</th>
+                <th scope="col">Descripcion</th>
+                <th scope="col">Imagen</th>
+                <th scope="col">Plataforma</th>
+                <th scope="col">Publicacion</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Opciones</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Titulo)
+                    </td>
+                    <td>
+                        @{
+                            var descripcion = item.Descripcion ?? string.Empty;
+                            var maxLength = 100;
+                            var descripcionCorta = descripcion.Length > maxLength
+                                ? descripcion.Substring(0, maxLength) + "..."
+                                : descripcion;
+                        }
+                        @descripcionCorta
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ImagenUrl)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Plataforma)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.FechaPublicacion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Category.Nombre)
+                    </td>
+                    <td>
+
+                        @Html.ActionLink("Borrar", "Delete", null, new {@class= "btn btn-danger"}) 
+                        @Html.ActionLink("Editar", "Edit", null, new {@class="btn btn-warning"})
+
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+
+
