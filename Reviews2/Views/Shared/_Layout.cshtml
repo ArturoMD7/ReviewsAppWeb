@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Mi aplicación ASP.NET</title>
+    <title>@ViewBag.Title - CritiKando</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 
@@ -26,7 +26,7 @@
 
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
                 <ul class="navbar-nav ms-auto">
-                    
+
                     @if (User.IsInRole("Admin"))
                     {
                         <li class="nav-item">
@@ -50,7 +50,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - Mi aplicación ASP.NET</p>
+            <p>&copy; @DateTime.Now.Year - CritiKando</p>
         </footer>
     </div>
 
@@ -63,3 +63,18 @@
 </body>
 </html>
 
+@section estilos {
+    <style>
+    @@font-face {
+        font-family: 'Chinese Rocks RG';
+        src: url('/Content/fonts/chinese-rocks-rg.otf') format('opentype');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    h2 {
+        font-family: 'Chinese Rocks RG', sans-serif;
+    }
+    </style>
+
+}

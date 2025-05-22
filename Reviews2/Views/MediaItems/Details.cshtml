@@ -4,215 +4,227 @@
 
 @{
     ViewBag.Title = "Detalles del Medio";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="media-details-container">
-    <h2>@Model.MediaItem.Titulo</h2>
-    <hr />
+<main class="container my-5 min-vh-100 d-flex">
+    <div class="bg-dark text-white p-4 rounded shadow-lg">
+        <h2 class="justify-content-center">@Model.MediaItem.Titulo</h2>
+        <hr class="border-danger" />
 
-    <div class="row">
-        <!-- Image column -->
-        <div class="col-md-4">
-            @if (!string.IsNullOrEmpty(Model.MediaItem.ImagenUrl))
-            {
-                <img src="@Model.MediaItem.ImagenUrl"
-                     alt="@Model.MediaItem.Titulo"
-                     class="img-responsive thumbnail"
-                     style="max-height: 300px;"
-                     onerror="this.onerror=null;this.src='/Content/avatars/default.png';" />
-            }
-            else
-            {
-                <div class="no-image-placeholder">
-                    <i class="glyphicon glyphicon-picture" style="font-size: 200px; color: #ddd;"></i>
+        <div class="row">
+            <!-- Imagen -->
+            <div class="col-md-4">
+                @if (!string.IsNullOrEmpty(Model.MediaItem.ImagenUrl))
+                {
+                    <img src="@Model.MediaItem.ImagenUrl"
+                         alt="@Model.MediaItem.Titulo"
+                         class="img-fluid rounded border border-danger shadow-sm"
+                         style="object-fit: cover; height: 500px; width: 100%;"
+                         onerror="this.onerror=null;this.src='/Content/avatars/default.png';" />
+                }
+                else
+                {
+                    <div class="d-flex align-items-center justify-content-center bg-secondary rounded" style="height: 300px;">
+                        <i class="fas fa-image fa-5x text-muted"></i>
+                    </div>
+                }
+            </div>
+
+            <!-- Detalles del medio -->
+            <div class="col-md-8">
+                <div class="mb-3">
+                    <h5 class="text-danger">Descripción</h5>
+                    <p>@Model.MediaItem.Descripcion</p>
                 </div>
-            }
+                <div class="mb-3">
+                    <h5 class="text-danger">Plataforma</h5>
+                    <p>@(string.IsNullOrWhiteSpace(Model.MediaItem.Plataforma) ? "No especificada" : Model.MediaItem.Plataforma)</p>
+                </div>
+                <div class="mb-3">
+                    <h5 class="text-danger">Fecha de publicación</h5>
+                    <p>@(Model.MediaItem.FechaPublicacion?.ToString("d") ?? "No especificada")</p>
+                </div>
+                <div class="mb-3">
+                    <h5 class="text-danger">Categoría</h5>
+                    <p>@(Model.MediaItem.Category?.Nombre ?? "Sin categoría")</p>
+                </div>
+            </div>
         </div>
 
-        <!-- Details column -->
-        <div class="col-md-8">
-            <dl class="dl-horizontal">
-                <dt>Descripción</dt>
-                <dd>@Model.MediaItem.Descripcion</dd>
-
-                <dt>Plataforma</dt>
-                <dd>@(string.IsNullOrEmpty(Model.MediaItem.Plataforma) ? "No especificada" : Model.MediaItem.Plataforma)</dd>
-
-                <dt>Fecha de publicación</dt>
-                <dd>@(Model.MediaItem.FechaPublicacion?.ToString("d") ?? "No especificada")</dd>
-
-                <dt>Categoría</dt>
-                <dd>@(Model.MediaItem.Category?.Nombre ?? "Sin categoría")</dd>
-            </dl>
-        </div>
-    </div>
-
-    <h3>Opiniones de usuarios</h3>
-    <div class="opiniones-container">
-        @if (Model.MediaItem.Opinions != null && Model.MediaItem.Opinions.Any())
-        {
-            foreach (var opinion in Model.MediaItem.Opinions.OrderByDescending(o => o.Fecha))
+        <!-- Opiniones -->
+        <h3 class="mt-5">Opiniones de usuarios</h3>
+        <div class="mt-4">
+            @if (Model.MediaItem.Opinions != null && Model.MediaItem.Opinions.Any())
             {
-                
-                var usuarioInfo = Model.UsuariosInfo?.ContainsKey(opinion.UsuarioId) == true
-                    ? Model.UsuariosInfo[opinion.UsuarioId]
-                    : new UserInfoViewModel
-                    {
-                        UserName = opinion.AspNetUser?.UserName ?? "Usuario",
-                        NombreCompleto = !string.IsNullOrWhiteSpace(opinion.AspNetUser?.NombreCompleto)
-                            ? opinion.AspNetUser.NombreCompleto
-                            : opinion.AspNetUser?.UserName ?? "Usuario anónimo",
-                        AvatarUrl = !string.IsNullOrWhiteSpace(opinion.AspNetUser?.AvatarUrl)
-                            ? opinion.AspNetUser.AvatarUrl
-                            : "/Content/avatars/default.png"
-                    };
+                foreach (var opinion in Model.MediaItem.Opinions.OrderByDescending(o => o.Fecha))
+                {
+                    var usuarioInfo = Model.UsuariosInfo?.ContainsKey(opinion.UsuarioId) == true
+                        ? Model.UsuariosInfo[opinion.UsuarioId]
+                        : new UserInfoViewModel
+                        {
+                            UserName = opinion.AspNetUser?.UserName ?? "Usuario",
+                            NombreCompleto = !string.IsNullOrWhiteSpace(opinion.AspNetUser?.NombreCompleto)
+                                ? opinion.AspNetUser.NombreCompleto
+                                : opinion.AspNetUser?.UserName ?? "Usuario anónimo",
+                            AvatarUrl = !string.IsNullOrWhiteSpace(opinion.AspNetUser?.AvatarUrl)
+                                ? opinion.AspNetUser.AvatarUrl
+                                : "/Content/avatars/default.png"
+                        };
 
-                <div class="opinion-item panel panel-default">
-                    <div class="panel-heading">
-                        <div class="media">
-                            <div class="media-left">
-                                <img src="@(usuarioInfo.AvatarUrl.StartsWith("http") ? usuarioInfo.AvatarUrl : Url.Content(usuarioInfo.AvatarUrl))"
-                                     alt="@usuarioInfo.NombreCompleto"
-                                     class="img-circle user-avatar"
-                                     width="40" height="40"
-                                     loading="lazy"
-                                     onerror="this.onerror=null;this.src='@Url.Content("~/Content/avatars/default.png")'" />
-                            </div>
-                            <div class="media-body">
-                                <strong>@usuarioInfo.NombreCompleto</strong>
-
-
-                                <span class="pull-right">
+                    <div class="opinion-item panel panel-default mb-3 bg-secondary bg-opacity-25 border rounded p-3 shadow-sm">
+                        <div class="panel-heading">
+                            <div class="media d-flex align-items-center">
+                                <div class="media-left me-3">
+                                    <img src="@(usuarioInfo.AvatarUrl.StartsWith("http") ? usuarioInfo.AvatarUrl : Url.Content(usuarioInfo.AvatarUrl))"
+                                         alt="@usuarioInfo.NombreCompleto"
+                                         class="img-circle user-avatar border"
+                                         width="40" height="40"
+                                         loading="lazy"
+                                         onerror="this.onerror=null;this.src='@Url.Content("~/Content/avatars/default.png")'" />
+                                </div>
+                                <div class="media-body">
+                                    <strong>@usuarioInfo.NombreCompleto</strong>
+                                    <div class="text-muted small">
+                                        @(opinion.Fecha?.ToString("g") ?? "Fecha no disponible")
+                                    </div>
+                                </div>
+                                <div class="ms-auto">
                                     @for (int i = 0; i < (opinion.Calificacion ?? 0); i++)
                                     {
                                         <span class="text-warning">★</span>
                                     }
-                                </span>
-                                <div class="text-muted small">
-                                    @(opinion.Fecha?.ToString("g") ?? "Fecha no disponible")
                                 </div>
                             </div>
                         </div>
+                        <div class="panel-body mt-2">
+                            @opinion.Comentario
+                        </div>
                     </div>
-                    <div class="panel-body">
-                        @opinion.Comentario
-                    </div>
-                </div>
+                }
             }
+            else
+            {
+                <div class="alert alert-info">No hay opiniones todavía. ¡Sé el primero en opinar!</div>
+            }
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="mt-4 d-flex gap-2">
+            @if (User.IsInRole("Admin"))
+            {
+                @Html.ActionLink("Editar", "Edit", new { id = Model.MediaItem.Id }, new { @class = "btn btn-warning" })
+                @Html.ActionLink("Eliminar", "Delete", new { id = Model.MediaItem.Id }, new { @class = "btn btn-danger" })
+            }
+            @Html.ActionLink("Volver al catálogo", "Index", "Home", null, new { @class = "btn btn-outline-danger" })
+        </div>
+
+        <!-- Formulario de opinión -->
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="mt-5 p-4 bg-dark bg-gradient border rounded">
+                <h4 class="mb-3">Deja tu opinión</h4>
+                @using (Html.BeginForm("Create", "Opinions", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="mediaItemId" value="@Model.MediaItem.Id" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Comentario:</label>
+                        <textarea name="comentario" class="form-control bg-dark text-white border-secondary" rows="3" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Calificación (1-5):</label>
+                        <select name="calificacion" class="form-select bg-dark text-white border-secondary">
+                            <option value="1">★</option>
+                            <option value="2">★★</option>
+                            <option value="3" selected>★★★</option>
+                            <option value="4">★★★★</option>
+                            <option value="5">★★★★★</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-outline-danger">Enviar opinión</button>
+                }
+            </div>
         }
         else
         {
-            <div class="alert alert-info">No hay opiniones todavía. ¡Sé el primero en opinar!</div>
+            <div class="alert alert-dark mt-4">
+                @Html.ActionLink("Inicia sesión", "Login", "Account") para dejar tu opinión.
+            </div>
         }
     </div>
+</main>
 
-    <!-- Action buttons -->
-    <div class="action-buttons">
-        @if (User.IsInRole("Admin"))
-        {
-            @Html.ActionLink("Editar", "Edit", new { id = Model.MediaItem.Id }, new { @class = "btn btn-warning" })
-            @Html.ActionLink("Eliminar", "Delete", new { id = Model.MediaItem.Id }, new { @class = "btn btn-danger" })
-        }
-        @Html.ActionLink("Volver al catálogo", "Index", "Home", null, new { @class = "btn btn-default" })
-    </div>
+@section estilos {
+    <style>
 
-    @if (User.Identity.IsAuthenticated)
-    {
-        <div class="opinion-form mt-4">
-            <h4>Deja tu opinión</h4>
-            @using (Html.BeginForm("Create", "Opinions", FormMethod.Post))
-            {
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="mediaItemId" value="@Model.MediaItem.Id" />
-
-                <div class="form-group">
-                    <label>Comentario:</label>
-                    <textarea name="comentario" class="form-control" rows="3" required></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Calificación (1-5):</label>
-                    <select name="calificacion" class="form-control">
-                        <option value="1">★</option>
-                        <option value="2">★★</option>
-                        <option value="3" selected>★★★</option>
-                        <option value="4">★★★★</option>
-                        <option value="5">★★★★★</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Enviar opinión</button>
-            }
-        </div>
-    }
-    else
-    {
-        <div class="alert alert-info mt-4">
-            @Html.ActionLink("Inicia sesión", "Login", "Account") para dejar tu opinión
-        </div>
-    }
-</div>
-
-
-<style>
-    .media-details-container {
-        margin-top: 20px;
-        padding: 20px;
-        background-color: #f9f9f9;
-        border-radius: 5px;
-    }
-
-    .no-image-placeholder {
-        text-align: center;
-        padding: 50px 0;
-        border: 2px dashed #ddd;
-    }
-
-    .action-buttons {
-        margin-top: 30px;
-        padding-top: 15px;
-        border-top: 1px solid #eee;
-    }
-
-    dt {
-        width: 120px;
-        text-align: left;
-        margin-bottom: 5px;
-    }
-
-    dd {
-        margin-left: 140px;
-        margin-bottom: 10px;
-    }
-
-    .opiniones-container {
-        margin-top: 30px;
-    }
-
-    .opinion-item {
-        margin-bottom: 15px;
-    }
-
-    .panel-heading {
-        padding: 8px 15px;
-    }
-
-    .user-avatar {
-        object-fit: cover;
-        border: 2px solid #eee;
-        margin-right: 10px;
-        transition: transform 0.3s ease;
-    }
-
-        .user-avatar:hover {
-            transform: scale(1.1);
+        @@font-face {
+            font-family: 'Chinese Rocks RG';
+            src: url('/Content/fonts/chinese-rocks-rg.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
         }
 
-    .opinion-item {
-        transition: box-shadow 0.3s ease;
-    }
 
-        .opinion-item:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        h2 {
+            font-size: 3rem;
+            font-family: 'Chinese Rocks RG', sans-serif;
+            color: white;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
-</style>
+
+        h3 {
+            font-size: 3rem;
+            font-family: 'Chinese Rocks RG', sans-serif;
+            color: white;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        h4 {
+            font-size: 2rem;
+            font-family: 'Chinese Rocks RG', sans-serif;
+            color: white;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar {
+            border-bottom: 3px solid #dc3545;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        body {
+            background: linear-gradient(to bottom, #000000, #121212);
+            color: white;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: 0.5rem;
+        }
+
+        h2, h3, h4, h5 {
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .btn-outline-danger, .btn-outline-light,
+        .btn-warning, .btn-danger {
+            border-radius: 0.5rem;
+        }
+
+        .alert-dark {
+            background-color: #333;
+            color: #eee;
+            border: 1px solid #555;
+        }
+
+        .user-avatar {
+            object-fit: cover;
+        }
+    </style>
+}

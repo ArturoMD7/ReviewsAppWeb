@@ -7,6 +7,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Reviews2.Models
 {
     using System;
@@ -19,13 +21,31 @@ namespace Reviews2.Models
         {
             this.Opinions = new HashSet<Opinion>();
         }
-    
+
+        
         public int Id { get; set; }
+
+        [Required(ErrorMessage = "El título es obligatorio.")]
+        [StringLength(100, ErrorMessage = "El título no puede tener más de 100 caracteres.")]
         public string Titulo { get; set; }
+
+        [Required(ErrorMessage = "La descripción es obligatoria.")]
+        [StringLength(1000, ErrorMessage = "La descripción no puede tener más de 1000 caracteres.")]
         public string Descripcion { get; set; }
+
+        [Required(ErrorMessage = "La URL de la imagen es obligatoria.")]
+        [Url(ErrorMessage = "Debe ser una URL válida.")]
         public string ImagenUrl { get; set; }
+
+        [Required(ErrorMessage = "La plataforma es obligatoria.")]
+        [StringLength(100, ErrorMessage = "La plataforma no puede tener más de 100 caracteres.")]
         public string Plataforma { get; set; }
+
+        [Required(ErrorMessage = "La fecha de publicación es obligatoria.")]
+        [DataType(DataType.Date, ErrorMessage = "Debe ser una fecha válida.")]
         public Nullable<System.DateTime> FechaPublicacion { get; set; }
+
+        [Required(ErrorMessage = "Debe seleccionar una categoría.")]
         public int CategoriaId { get; set; }
     
         public virtual Category Category { get; set; }
